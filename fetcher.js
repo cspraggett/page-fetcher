@@ -13,12 +13,6 @@ request(site, (error, response, body) => {
     console.log("Error, request not successful");
     process.exit();
   }
-  // if (response.statusCode < 200 || response.statusCode >= 300) {
-  //   console.log(
-  //     `Request was unsuccessful, Error code: ${response.statusCode} `
-  //   );
-  //   process.exit();
-  // }
   fs.access(path, fs.constants.F_OK, err => {
     if (!err) {
       rl.question(`${path} already exists, press 'y' to erase it: `, answer => {
@@ -29,10 +23,15 @@ request(site, (error, response, body) => {
           fs.writeFile(path, body, err => {
             if (err) {
               console.log("Invalid file path");
+              rl.close();
               process.exit();
             }
-            console.log(`Downloaded and saved ${body.length} bytes to ${path}`);
-            rl.close();
+            fs.stat(path, (err, stats) => {
+              console.log(
+                `Downloaded and saved ${stats.size} bytes to ${path}`
+              );
+              rl.close();
+            });
           });
         }
       });
@@ -42,7 +41,10 @@ request(site, (error, response, body) => {
           console.log("Invalid file path");
           process.exit();
         }
-        console.log(`Downloaded and saved ${body.length} bytes to ${path}`);
+        fs.stat(path, (err, stats) => {
+          console.log(`Downloaded and saved ${stats.size} bytes to ${path}`);
+          rl.close();
+        });
       });
     }
   });
