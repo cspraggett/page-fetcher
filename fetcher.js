@@ -19,14 +19,22 @@ request(site, (error, response, body) => {
           console.log("goodbye");
           rl.close();
         } else {
-          fs.writeFile(path, body, () => {
+          fs.writeFile(path, body, err => {
+            if (err) {
+              console.log("Invalid file path");
+              process.exit();
+            }
             console.log(`Downloaded and saved ${body.length} bytes to ${path}`);
             rl.close();
           });
         }
       });
     } else {
-      fs.writeFile(path, body, () => {
+      fs.writeFile(path, body, err => {
+        if (err) {
+          console.log("Invalid file path");
+          process.exit();
+        }
         console.log(`Downloaded and saved ${body.length} bytes to ${path}`);
       });
     }
